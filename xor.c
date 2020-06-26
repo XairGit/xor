@@ -32,7 +32,7 @@ char * crypt(char * message, unsigned int * keys) {
 	// attempt to ensure proper null termination
 	ciphertext[textsize+1] = '\0';
 	for(int i = 0; i < textsize; i++) {
-		ciphertext[i] = message[i] ^ keys[i % 256];
+		ciphertext[i] = message[i] ^ keys[i % KEYSIZE];
 	}
 	// no character checks done here
 	// this output may contain null characters
