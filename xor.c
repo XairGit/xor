@@ -3,14 +3,18 @@
 #include <stdio.h>
 #include <sys/random.h>
 
+// size of key in bytes created by keygen function
+// currently set to maximum length of message to avoid key reuse
+#define KEYSIZE 1024
+
 unsigned int * keygen(void) {
 	/// Function to generate random key data
-	unsigned int * keys = malloc(256);
+	unsigned int * keys = malloc(KEYSIZE);
 	if(keys == NULL) {
 		fprintf(stderr, "[ERROR] Failed to allocate memory");
 		exit(1);
 	}	
-	if(getrandom(keys, 256, 0) == -1) {
+	if(getrandom(keys, KEYSIZE, 0) == -1) {
 		fprintf(stderr, "[ERROR] Failed to generate random bytes for keys");
 		exit(2);
 	}
@@ -37,14 +41,15 @@ char * crypt(char * message, unsigned int * keys) {
 }
 
 int main(void) {
-	char * message = malloc(1024);
-	printf("Enter message to be encrypted: ");
-	fgets(message, 1024, stdin);
+	// set to keysize to avoid key reuse
+	char * message = malloc(KEYSIZE);
 	unsigned int * keys = keygen();
+	char * ciphertext;
+	printf("Enter message to be encrypted: ");
+	fgets(message, KEYSIZE, stdin);
 	printf("Encrypting message: %s\n", message);
-	char * ciphertext = crypt(message, keys);
+	ciphertext = crypt(message, keys);
 	printf("Encrypted message: \"%s\"\n", ciphertext);
-	puts("Decrypting message...");
 	// NOTE: this output may not be completely accurate
 	// as no delimiters (such as null) are removed from ciphertext, and C string functions
 	// such as strlen() rely on these delimiters to work, which results in
