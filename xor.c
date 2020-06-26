@@ -29,14 +29,14 @@ char * crypt(char * message, unsigned int * keys) {
 		fprintf(stderr, "[ERROR] Failed to allocate memory");
 		exit(1);
 	}
-	// ensure proper null termination
+	// attempt to ensure proper null termination
 	ciphertext[textsize+1] = '\0';
 	for(int i = 0; i < textsize; i++) {
 		ciphertext[i] = message[i] ^ keys[i % 256];
 	}
 	// no character checks done here
 	// this output may contain null characters
-	// and other delimiters after XOR unless manually removed
+	// and other delimiters in random places after XOR unless manually removed
 	return ciphertext;
 }
 
