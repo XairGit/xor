@@ -7,6 +7,10 @@
 // currently set to maximum length of message to avoid key reuse
 #define KEYSIZE 1024
 
+// size of message in bytes to be read and processed
+// using this allows us to make assumptions about size and avoid delimiters
+#define MSGSIZE 1024
+
 unsigned int * keygen(void) {
 	/// Function to generate random key data
 	unsigned int * keys = malloc(KEYSIZE);
@@ -23,15 +27,14 @@ unsigned int * keygen(void) {
 
 char * crypt(char * message, unsigned int * keys) {
 	/// Function to encrypt/decrypt data using XOR
-	int textsize = strlen(message);
-	char * ciphertext = malloc(textsize+1);
+	char * ciphertext = malloc(MSGSIZE+1);
 	if(ciphertext == NULL) {
 		fprintf(stderr, "[ERROR] Failed to allocate memory");
 		exit(1);
 	}
 	// attempt to ensure proper null termination
-	ciphertext[textsize+1] = '\0';
-	for(int i = 0; i < textsize; i++) {
+	ciphertext[MSGSIZE+1] = '\0';
+	for(int i = 0; i < MSGSIZE; i++) {
 		ciphertext[i] = message[i] ^ keys[i % KEYSIZE];
 	}
 	// no character checks done here
@@ -42,7 +45,7 @@ char * crypt(char * message, unsigned int * keys) {
 
 int main(void) {
 	// set to keysize to avoid key reuse
-	char * message = malloc(KEYSIZE);
+	char * message = malloc(MSGSIZE);
 	unsigned int * keys = keygen();
 	char * ciphertext;
 	printf("Enter message to be encrypted: ");
