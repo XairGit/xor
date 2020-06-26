@@ -30,20 +30,31 @@ char * crypt(char * message, unsigned int * keys) {
 	for(int i = 0; i < textsize; i++) {
 		ciphertext[i] = message[i] ^ keys[i % 256];
 	}
+	// no character checks done here
+	// this output may contain null characters
+	// and other delimiters after XOR unless manually removed
 	return ciphertext;
 }
 
 int main(void) {
-	char message[] = "Ayylmao Testing";
-	puts("Getting keys...");
+	char * message = malloc(1024);
+	printf("Enter message to be encrypted: ");
+	fgets(message, 1024, stdin);
 	unsigned int * keys = keygen();
-	printf("Encrypting message: \"%s\"\n", message);
+	printf("Encrypting message: %s\n", message);
 	char * ciphertext = crypt(message, keys);
 	printf("Encrypted message: \"%s\"\n", ciphertext);
 	puts("Decrypting message...");
+	// NOTE: this output may not be completely accurate
+	// as no delimiters (such as null) are removed from ciphertext, and C string functions
+	// such as strlen() rely on these delimiters to work, which results in
+	// output being occasionally cut off or incorrectly displayed at times
 	ciphertext = crypt(ciphertext, keys);
-	printf("Decrypted: \"%s\"\n", ciphertext);
+	printf("Decrypted: %s\n", ciphertext);
+	// free dynamic allocations here
+	// this isn't technically required but whatever it's in the spec
 	free(ciphertext);
 	free(keys);
+	free(message);
 	return 0;
 }
