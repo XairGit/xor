@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/random.h>
+#include <string.h>
 
 // size of key in bytes created by keygen function
 // currently set to maximum length of message to avoid key reuse
@@ -27,12 +28,12 @@ unsigned int * keygen(void) {
 char * crypt(char * message, unsigned int * keys) {
 	/// Function to encrypt/decrypt data using XOR
 	char * ciphertext = malloc(MSGSIZE+1);
-	if(ciphertext == NULL) {
+	// zero memory to prevent heap data accidentally leaking
+  memset(ciphertext, '\0', MSGSIZE+1);
+  if(ciphertext == NULL) {
 		fprintf(stderr, "[ERROR] Failed to allocate memory");
 		exit(1);
 	}
-	// attempt to ensure proper null termination
-	ciphertext[MSGSIZE+1] = '\0';
 	for(int i = 0; i < MSGSIZE; i++) {
 		ciphertext[i] = message[i] ^ keys[i % KEYSIZE];
 	}
@@ -45,6 +46,8 @@ char * crypt(char * message, unsigned int * keys) {
 int main(void) {
 	// set to keysize to avoid key reuse
 	char * message = malloc(MSGSIZE);
+  // due to fgets behaviour we must ensure memory is zero'd to prevent heap data leaking
+  memset(message, '\0', MSGSIZE);
 	unsigned int * keys = keygen();
 	char * ciphertext;
 	printf("Enter message to be encrypted: ");
