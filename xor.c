@@ -58,7 +58,19 @@ int main(void) {
   }
   printf("Encrypting message: %s\n", message);
   ciphertext = crypt(message, keys);
-  printf("Encrypted message: \"%s\"\n", ciphertext);
+  // this allows us to represent the raw data has hex bytes to avoid breaking terminals
+  // and to make sure things are more readable on output
+  printf("Encrypted: ");
+  for(int i = 0; i < MSGSIZE; i++) {
+    // ignore null bytes, since end of unfilled buffer is just '\0's
+    // and we don't care about displaying null data to users
+    if(ciphertext[i] == '\0')
+      continue;
+
+    printf("%#.8x ", (int)ciphertext[i]);
+  }
+  // newline after hex bytes are output to console
+  puts("\n");
   // NOTE: this output may not be completely accurate
   // as no delimiters (such as null) are removed from ciphertext, and C string functions
   // such as strlen() rely on these delimiters to work, which results in
